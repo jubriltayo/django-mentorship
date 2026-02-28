@@ -1,0 +1,23 @@
+<div class="card h-100">
+  <div class="card-body">
+    <h5 class="card-title">
+      <a
+        href="{% url 'tasks:task_detail' pk=task.pk %}"
+        class="text-decoration-none"
+      >
+        {{ task.title }}
+      </a>
+    </h5>
+    <p class="card-text text-muted">
+      {{ task.description|default:"No description"|truncatewords:15 }}
+    </p>
+  </div>
+  <div class="card-footer bg-transparent">
+    <span class="badge {{ task.status|status_badge }}">
+      {{ task.get_status_display }}
+    </span>
+    <small class="text-muted float-end">
+      {{ task.created_at|timesince }} ago
+    </small>
+  </div>
+</div>

@@ -136,17 +136,17 @@ def task_delete(request: HttpRequest, pk: int) -> HttpResponse:
 # CLASS BASED VIEW (CBV)
 # ========================
 
-# from django.views.generic import (
-#     ListView,
-#     DetailView,
-#     CreateView,
-#     UpdateView,
-#     DeleteView,
-#     TemplateView,
-# )
+from django.views.generic import (
+    ListView,
+    DetailView,
+    CreateView,
+    UpdateView,
+    DeleteView,
+    TemplateView,
+)
 # from django.urls import reverse_lazy
 # from django.contrib import messages
-# from django.db.models import Count
+from django.db.models import Count
 
 # from .models import Task, Category, Status, Priority
 
@@ -212,27 +212,27 @@ def task_delete(request: HttpRequest, pk: int) -> HttpResponse:
 #         return super().form_valid(form)
 
 
-# class TaskUpdateView(UpdateView):
-#     """Update an existing task."""
+class TaskUpdateView(UpdateView):
+    """Update an existing task."""
 
-#     model = Task
-#     template_name = "tasks/task_form.html"
-#     fields = [
-#         "title",
-#         "description",
-#         "priority",
-#         "status",
-#         "category",
-#         "due_date",
-#         "tags",
-#     ]
+    model = Task
+    template_name = "tasks/task_form.html"
+    fields = [
+        "title",
+        "description",
+        "priority",
+        "status",
+        "category",
+        "due_date",
+        "tags",
+    ]
 
-#     def get_success_url(self):
-#         return reverse_lazy("tasks:task_detail", kwargs={"pk": self.object.pk})
+    def get_success_url(self):
+        return reverse_lazy("tasks:task_detail", kwargs={"pk": self.object.pk})
 
-#     def form_valid(self, form):
-#         messages.success(self.request, "Task updated successfully!")
-#         return super().form_valid(form)
+    def form_valid(self, form):
+        messages.success(self.request, "Task updated successfully!")
+        return super().form_valid(form)
 
 
 # class TaskDeleteView(DeleteView):
@@ -247,17 +247,17 @@ def task_delete(request: HttpRequest, pk: int) -> HttpResponse:
 #         return super().form_valid(form)
 
 
-# class DashboardView(TemplateView):
-#     """Dashboard with statistics."""
+class DashboardView(TemplateView):
+    """Dashboard with statistics."""
 
-#     template_name = "tasks/dashboard.html"
+    template_name = "tasks/dashboard.html"
 
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         context["total_tasks"] = Task.objects.count()
-#         context["completed_tasks"] = Task.objects.filter(
-#             status=Status.COMPLETED
-#         ).count()
-#         context["pending_tasks"] = Task.objects.filter(status=Status.PENDING).count()
-#         context["categories"] = Category.objects.annotate(task_count=Count("tasks"))
-#         return context
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["total_tasks"] = Task.objects.count()
+        context["completed_tasks"] = Task.objects.filter(
+            status=Status.COMPLETED
+        ).count()
+        context["pending_tasks"] = Task.objects.filter(status=Status.PENDING).count()
+        context["categories"] = Category.objects.annotate(task_count=Count("tasks"))
+        return context

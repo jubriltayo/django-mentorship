@@ -4,7 +4,7 @@ from . import converters
 
 app_name = "tasks"
 
-register_converter(converters.FourDigitYearConverter, "yyyy")
+# register_converter(converters.FourDigitYearConverter, "yyyy")
 
 urlpatterns = [
     # Function Based Views (FBV)
@@ -17,14 +17,15 @@ urlpatterns = [
     # path("tasks/", views.TaskListView.as_view(), name="task_list"),
     # path("tasks/create/", views.TaskCreateView.as_view(), name="task_create"),
     # path("tasks/<int:pk>/", views.TaskDetailView.as_view(), name="task_detail"),
-    # path("tasks/<int:pk>/edit/", views.TaskUpdateView.as_view(), name="task_update"),
+    path("tasks/<int:pk>/edit/", views.TaskUpdateView.as_view(), name="task_update"),
     # path("tasks/<int:pk>/delete/", views.TaskDeleteView.as_view(), name="task_delete"),
+    path("tasks/dashboard", views.DashboardView.as_view(), name="dashboard"),
     # Slug Based URLs
     # path("category/<slug:slug>/"), views.category_detail, name="category_detail",
     # Multiple parameters
-    path("archive/<int:year>/<int:month>/", views.archive, name="archive"),
+    # path("archive/<int:year>/<int:month>/", views.archive, name="archive"),
     # path("archive/<yyyy:year>/", views.archive, name="archive"),
     # API endpoints
     path("api/tasks/", views.task_api_list, name="api_task_list"),
-    path("api/tasks/<int:pk>/", views.task_api_detail, name="api_task_detail"),
+    # path("api/tasks/<int:pk>/", views.task_api_detail, name="api_task_detail"),
 ]
