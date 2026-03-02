@@ -16,6 +16,7 @@ from django.views.decorators.http import require_http_methods, require_GET, requ
 from django.core.paginator import Paginator
 
 from .models import Task, Category, Status, Priority
+from .forms import TaskForm
 
 
 # Basic view
@@ -131,6 +132,21 @@ def task_delete(request: HttpRequest, pk: int) -> HttpResponse:
 
     return render(request, "tasks/task_confirm_delete.html", {"task": task})
 
+# Create task form
+def task_create(request):
+    if request.method == 'POST':
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            task = form.save()
+            messages.success(request, 'Task created!')
+            return redirect('tasks:task_detail', pk=task.pk)
+    else:
+        form = TaskForm()
+
+    return render(request, 'tasks/task_form.html', {'form': form})
+
+
+
 
 # ========================
 # CLASS BASED VIEW (CBV)
@@ -144,8 +160,8 @@ from django.views.generic import (
     DeleteView,
     TemplateView,
 )
-# from django.urls import reverse_lazy
-# from django.contrib import messages
+from django.urls import reverse_lazy
+from django.contrib import messages
 from django.db.models import Count
 
 # from .models import Task, Category, Status, Priority
@@ -261,3 +277,11 @@ class DashboardView(TemplateView):
         context["pending_tasks"] = Task.objects.filter(status=Status.PENDING).count()
         context["categories"] = Category.objects.annotate(task_count=Count("tasks"))
         return context
+
+
+# Class-based view (Create task form)
+# class TaskCreateView(CreateView):
+#     model = Task
+#     form_class = TaskForm
+#     template_name = 'tasks/task_form.html'
+#     success_url = reverse_lazy('tasks:task_list')
