@@ -9,6 +9,8 @@ Each attribute maps to a database column.
 from django.db import models
 from django.utils import timezone
 
+# from django.conf import settings
+
 
 class Category(models.Model):
     """
@@ -63,6 +65,10 @@ class Task(models.Model):
 
     Database table: tasks_task
     """
+
+    # owner = models.ForeignKey(
+    #     settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="tasks"
+    # )
 
     # Required fields
     title = models.CharField(max_length=200, help_text="Task title")
