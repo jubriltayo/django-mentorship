@@ -10,3 +10,20 @@ dependencies = [
     "pillow>=12.1.1",
     "python-decouple>=3.8",
 ]
+
+[dependency-groups]
+dev = [
+    "factory-boy>=3.3.3",
+    "pytest>=9.0.2",
+    "pytest-cov>=7.0.0",
+    "pytest-django>=4.12.0",
+]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+python_files = ["test_*.py", "*_test.py"]
+addopts = "-v --tb=short"
+
+[tool.coverage.run]
+source = ["tasks"]
+omit = ["*/migrations/*", "*/tests/*"]

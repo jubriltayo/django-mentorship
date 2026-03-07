@@ -14,15 +14,17 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.views.decorators.http import require_http_methods, require_GET, require_POST
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
 
 from .models import Task, Category, Status, Priority
 from .forms import TaskForm
 
 
 # Basic view
+@login_required
 def task_list(request: HttpRequest) -> HttpResponse:
     """List all tasks with filtering and pagination"""
-    tasks = Task.objects.select_related("category").prefetch_related("tags")
+    tasks = Task.objects.filter(owner=request.user).select_related("category").prefetch_related("tags")
 
     # Filter by status (query parameter)
     status = request.GET.get("status")
