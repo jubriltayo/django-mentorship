@@ -15,6 +15,9 @@ from django.urls import reverse
 from django.views.decorators.http import require_http_methods, require_GET, require_POST
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie
+from silk.profiling.profiler import silk_profile
 
 from .models import Task, Category, Status, Priority
 from .forms import TaskForm
@@ -22,6 +25,9 @@ from .forms import TaskForm
 
 # Basic view
 @login_required
+@silk_profile(name="Task List View")
+@vary_on_cookie
+@cache_page(60 * 15)
 def task_list(request: HttpRequest) -> HttpResponse:
     """List all tasks with filtering and pagination"""
     tasks = Task.objects.filter(owner=request.user).select_related("category").prefetch_related("tags")

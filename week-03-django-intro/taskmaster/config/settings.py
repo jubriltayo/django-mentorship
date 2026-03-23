@@ -52,14 +52,23 @@ MIDDLEWARE = [
 ]
 
 if DEBUG:
-    INSTALLED_APPS += ["debug_toolbar"]
+    INSTALLED_APPS += [
+        "debug_toolbar",
+        "silk",
+    ]
 
     MIDDLEWARE = [
         "debug_toolbar.middleware.DebugToolbarMiddleware",
+        "silk.middleware.SilkyMiddleware",
         *MIDDLEWARE,
     ]
 
     INTERNAL_IPS = ["127.0.0.1"]
+
+    SILKY_PYTHON_PROFILER = True
+    SILKY_PYTHON_PROFILER_BINARY = True
+    SILKY_PYTHON_PROFILER_FUNC = None
+    SILKY_INTERCEPT_PERCENT = 100
 
 ROOT_URLCONF = "config.urls"
 
@@ -78,6 +87,16 @@ TEMPLATES = [
         },
     },
 ]
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/1',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
 
 WSGI_APPLICATION = "config.wsgi.application"
 

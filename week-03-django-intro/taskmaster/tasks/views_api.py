@@ -2,6 +2,7 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db.models import Count
+from django.core.cache import cache
 
 from .models import Task, Category, Tag
 from .serializers import TaskSerializer, CategorySerializer, TagSerializer
@@ -17,22 +18,38 @@ class TaskViewSet(viewsets.ModelViewSet):
         ).select_related('category').prefetch_related('tags')
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+        task = serializer.save(owner=self.request.user)
+        self._invalidate_task_cache(self.request.user.id)
 
     @action(detail=True, methods=['post'])
     def complete(self, request, pk=None):
         task = self.get_object()
         task.mark_complete()
+        self._invalidate_task_cache(request.user.id)
         return Response({'status': 'completed'})
 
     @action(detail=False, methods=['get'])
     def stats(self, request):
-        queryset = self.get_queryset()
-        return Response({
-            'total': queryset.count(),
-            'completed': queryset.filter(status='completed').count(),
-            'pending': queryset.filter(status='pending').count(),
-        })
+        user_id = request.user.id
+        cache_key = f"task_stats_{user_id}"
+
+        data = cache.get(cache_key)
+
+        if data is None:
+            queryset = self.get_queryset()
+        
+            data = {
+                'total': queryset.count(),
+                'completed': queryset.filter(status='completed').count(),
+                'pending': queryset.filter(status='pending').count(),
+            }
+        
+            cache.set(cache_key, data, timeout=60)
+
+        return Response(data)
+
+    def _invalidate_task_cache(self, user_id):
+        cache.delete(f"task_stats_{user_id}")
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
