@@ -6,6 +6,7 @@ from django.core.cache import cache
 
 from .models import Task, Category, Tag
 from .serializers import TaskSerializer, CategorySerializer, TagSerializer
+from .tasks import send_task_reminder, generate_report
 
 
 class TaskViewSet(viewsets.ModelViewSet):
@@ -19,12 +20,14 @@ class TaskViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         task = serializer.save(owner=self.request.user)
+        send_task_reminder.delay(task.id)
         self._invalidate_task_cache(self.request.user.id)
 
     @action(detail=True, methods=['post'])
     def complete(self, request, pk=None):
         task = self.get_object()
         task.mark_complete()
+        generate_report.delay(request.user.id)
         self._invalidate_task_cache(request.user.id)
         return Response({'status': 'completed'})
 
