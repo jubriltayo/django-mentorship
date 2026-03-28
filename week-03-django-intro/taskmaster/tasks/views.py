@@ -24,13 +24,14 @@ from .forms import TaskForm
 
 
 # Basic view
-@login_required
-@silk_profile(name="Task List View")
-@vary_on_cookie
-@cache_page(60 * 15)
+# @login_required
+# @silk_profile(name="Task List View")
+# @vary_on_cookie
+# @cache_page(60 * 15)
 def task_list(request: HttpRequest) -> HttpResponse:
     """List all tasks with filtering and pagination"""
-    tasks = Task.objects.filter(owner=request.user).select_related("category").prefetch_related("tags")
+    # tasks = Task.objects.filter(owner=request.user).select_related("category").prefetch_related("tags")
+    tasks = Task.objects.filter().select_related("category").prefetch_related("tags")
 
     # Filter by status (query parameter)
     status = request.GET.get("status")
